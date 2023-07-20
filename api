@@ -1,0 +1,122 @@
+In order to make addresses trusted using the Binance API, you would need to perform the following steps:
+
+Authenticate with the Binance API using your API key and secret.
+Retrieve the address you want to mark as trusted.
+Make a request to the Binance API to add the address to the trusted list.
+Here's an example of how you can use the Binance API to make an address trusted in Python:
+
+import requests
+import json
+import hashlib
+import hmac
+import time
+
+# Set your Binance API key and secret
+api_key = "YOUR_API_KEY"
+api_secret = "YOUR_API_SECRET"
+
+# Set the address you want to mark as trusted
+address = "YOUR_ADDRESS"
+
+# Set the Binance API endpoint for adding an address to the trusted list
+url = "https://api.binance.com/sapi/v1/capital/config/getall"
+
+# Generate a timestamp for the request
+timestamp = int(time.time() * 1000)
+
+# Build the request payload
+payload = 
+Generate the signature using the API secret
+params = '&'.join([f"
+
+=
+
+" for k, v in payload.items()]) signature = hmac.new(api_secret.encode('utf-8'), params.encode('utf-8'), hashlib.sha256).hexdigest()
+
+Add the signature to the payload
+payload['signature'] = signature
+
+Add the API key to the request headers
+headers =
+
+Make the API request
+response = requests.get(url, headers=headers, params=payload)
+
+Check if the request was successful
+if response.status_code == 200: # Parse the response JSON data = response.json()
+
+# Check if the address exists in the response
+for config in data:
+    if config['address'] == address:
+        # Mark the address as trusted
+        config['trusted'] = True
+        break
+
+# Convert the updated data back to JSON string
+updated_data = json.dumps(data)
+
+# Call the Binance API again to update the trusted list
+update_url = "https://api.binance.com/sapi/v1/capital/config/update"
+
+# Generate a new timestamp for the update request
+update_timestamp = int(time.time() * 1000)
+
+# Append the additional parameters for the update request
+update_payload = 
+=
+
+" for k, v in payload.items()]) signature = hmac.new(api_secret.encode('utf-8'), params.encode('utf-8'), hashlib.sha256).hexdigest()
+
+Add the signature to the payload
+payload['signature'] = signature
+
+Add the API key to the request headers
+headers = { 'X-MBX-APIKEY': api_key }
+
+Make the API request
+response = requests.get(url, headers=headers, params=payload)
+
+Check if the request was successful
+if response.status_code == 200: # Parse the response JSON data = response.json()
+
+# Check if the address exists in the response
+for config in data:
+    if config['address'] == address:
+        # Mark the address as trusted
+        config['trusted'] = True
+        break
+
+# Convert the updated data back to JSON string
+updated_data = json.dumps(data)
+
+# Call the Binance API again to update the trusted list
+update_url = "https://api.binance.com/sapi/v1/capital/config/update"
+
+# Generate a new timestamp for the update request
+update_timestamp = int(time.time() * 1000)
+
+# Append the additional parameters for the update request
+update_payload = {
+    'timestamp': update_timestamp,
+    'data': updated_data,
+}
+
+# Generate the signature for the update request
+update_params = '&'.join([f"{k}={v}" for k, v in update_payload.items()])
+update_signature = hmac.new(api_secret.encode('utf-8'), update_params.encode('utf-8'), hashlib.sha256).hexdigest()
+
+# Add the update signature to the update payload
+update_payload['signature'] = update_signature
+
+# Make the update request to mark the address as trusted
+update_response = requests.post(update_url, headers=headers, params=update_payload)
+
+# Check if the update request was successful
+if update_response.status_code == 200:
+    print(f"The address 
+has been marked as trusted.") else: print("Failed to update the trusted list.") else: print("Failed to retrieve the trusted list.")
+
+
+Note: This code assumes that you have already generated your API key and secret from the Binance website. Replace `YOUR_API_KEY` and `YOUR_API_SECRET` with your own credentials, and `YOUR_ADDRESS` with the address you want to mark as trusted.
+
+Please be cautious when making changes to trusted addresses, as it may have implications for your account security. Make sure to thoroughly understand the Binance API documentation and security practices before implementing any changes.
